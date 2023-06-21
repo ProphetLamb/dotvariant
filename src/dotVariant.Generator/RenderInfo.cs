@@ -132,7 +132,7 @@ namespace dotVariant.Generator
             /// <param name="Type">
             /// Top-level name of the variant's type including type parameter list.
             /// </param>
-            /// <param name="TypeParameterQualifiedName">
+            /// <param name="ExtensionClassName">
             /// The fully qualified class name of the type including type parameters.
             /// e.g. TypeName T1,T2,T3 = TypeName_T1_T2_T3
             /// </param>
@@ -142,7 +142,7 @@ namespace dotVariant.Generator
                 string Name,
                 string QualifiedType,
                 string Type,
-                string TypeParameterQualifiedName);
+                string ExtensionClassName);
 
             public readonly record struct TypeContext(
                 TypeName Type,
@@ -283,7 +283,7 @@ namespace dotVariant.Generator
                 DiagType: type.ToDisplayString(DiagFormat),
                 QualifiedType: type.ToDisplayString(QualifiedTypeFormat),
                 Type: type.ToDisplayString(TopLevelTypeFormat),
-                TypeParameterQualifiedName: TypeParameterQualifiedName(type)
+                ExtensionClassName: CreateExtensionMethodName(type)
             );
         }
 
@@ -292,9 +292,9 @@ namespace dotVariant.Generator
             return type.ContainingNamespace.IsGlobalNamespace ? null : type.ContainingNamespace.ToDisplayString();
         }
 
-        private static string TypeParameterQualifiedName(INamedTypeSymbol type)
+        private static string CreateExtensionMethodName(INamedTypeSymbol type)
         {
-            return type.TypeParameters.IsDefaultOrEmpty ? type.Name : $"{type.Name}_{string.Join("_", type.TypeParameters.Select(p => p.Name))}_";
+            return type.TypeParameters.IsDefaultOrEmpty ? $"{type.Name}_VariantExtensions" : $"{type.Name}_{string.Join("_", type.TypeParameters.Select(p => p.Name))}_VariantExtensions";
         }
 
         private static string DetermineOutType(IParameterSymbol p, bool emitNullable, LanguageVersion version)
