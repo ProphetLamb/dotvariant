@@ -64,9 +64,6 @@ namespace dotVariant.Generator
         /// <param name="CanBeNull">
         /// <see langword="true"/> if <see langword="null"/> is a valid value for the variant type.
         /// </param>
-        /// <param name="DiagType">
-        /// The fully qualified name of the type (without <c>global::</c> qualifier) used for diagnostic strings/messages.
-        /// </param>
         /// <param name="ExtensionsAccessibility">
         /// The accessibility to use for the class containing extension methods.
         /// <see langword="null"/> if extensions are impossible to define.
@@ -87,37 +84,27 @@ namespace dotVariant.Generator
         /// <param name="Keyword">
         /// The C# keyword used to define this type.
         /// </param>
-        /// <param name="Name">
+        /// <param name="Type">
         /// The unescaped name of the variant for documentation and similar.
         /// </param>
         /// <param name="Namespace">
         /// Namespace of the variant type, or <see langword="null"/> if in the global namespace.
         /// </param>
-        /// <param name="QualifiedType">
-        /// The fully qualified name of the type including type parameters.
-        /// </param>
-        /// <param name="Type">
-        /// Top-level name of the variant's type including type parameter list.
-        /// </param>
         /// <param name="UserDefined">
         /// Contains info about relevant members the user has defined.
         /// </param>
         public readonly record struct VariantInfo(
+            VariantInfo.TypeName Type,
             string? Accessibility,
             bool CanBeNull,
-            string DiagType,
             string? ExtensionsAccessibility,
             ImmutableArray<VariantInfo.GenericInfo> Generics,
             string Identifier,
             bool IsReadonly,
             bool IsReferenceType,
             string Keyword,
-            string Name,
             string? Namespace,
-            string QualifiedType,
-            string Type,
-            VariantInfo.UserDefinitions UserDefined,
-            string TypeParameterQualifiedName)
+            VariantInfo.UserDefinitions UserDefined)
         {
             /// <param name="Dispose">
             /// <see langword="true"/> if a user-defined <see cref="IDisposable.Dispose()"/> exists.
@@ -134,6 +121,33 @@ namespace dotVariant.Generator
             public readonly record struct GenericInfo(
                 ImmutableArray<string> Constraints,
                 string Identifier);
+
+            /// <param name="DiagType">
+            /// The fully qualified name of the type (without <c>global::</c> qualifier) used for diagnostic strings/messages.
+            /// </param>
+            /// <param name="Name">
+            /// The unescaped name of the variant for documentation and similar.
+            /// </param>
+            /// <param name="QualifiedType">
+            /// The fully qualified name of the type including type parameters.
+            /// </param>
+            /// <param name="Type">
+            /// Top-level name of the variant's type including type parameter list.
+            /// </param>
+            /// <param name="TypeParameterQualifiedName">
+            /// The fully qualified class name of the type including type parameters.
+            /// e.g. TypeName T1,T2,T3 = TypeName_T1_T2_T3
+            /// </param>
+            public readonly record struct TypeName(
+                string DiagType,
+                string Name,
+                string QualifiedType,
+                string Type,
+                string TypeParameterQualifiedName);
+
+            public readonly record struct TypeLocation(
+                string? Namespace,
+                ImmutableArray<TypeName> Parents);
         }
 
         /// <param name="CanBeNull">
@@ -233,23 +247,25 @@ namespace dotVariant.Generator
                     HasHashCode: compilation.HasHashCode,
                     HasSystemReactiveLinq: compilation.HasReactive),
                 Variant: new(
+                    Type: new(
+                        Name: type.Name,
+                        DiagType: type.ToDisplayString(DiagFormat),
+                        QualifiedType: type.ToDisplayString(QualifiedTypeFormat),
+                        Type: type.ToDisplayString(TopLevelTypeFormat),
+                        TypeParameterQualifiedName: TypeParameterQualifiedName(type)
+                    ),
                     Accessibility: VariantAccessibility(type),
                     CanBeNull: type.IsReferenceType,
-                    DiagType: type.ToDisplayString(DiagFormat),
                     ExtensionsAccessibility: ExtensionsAccessibility(type),
                     Generics: GenericsFromType(type),
                     Identifier: type.ToDisplayString(IdentifierFormat),
                     IsReferenceType: type.IsReferenceType,
                     IsReadonly: IsReadonly(type, token),
                     Keyword: desc.Syntax.Keyword.Text,
-                    Name: type.Name,
                     Namespace: typeNamespace,
-                    QualifiedType: type.ToDisplayString(QualifiedTypeFormat),
-                    Type: type.ToDisplayString(TopLevelTypeFormat),
                     UserDefined: new(
                         // If the user defined any method named Dispose() bail out. Too risky!
-                        Dispose: ImplementsDispose(type, compilation.DisposableInterface) || HasAnyDisposeMethod(type)),
-                    TypeParameterQualifiedName: TypeParameterQualifiedName(type)
+                        Dispose: ImplementsDispose(type, compilation.DisposableInterface) || HasAnyDisposeMethod(type))
                 )
             );
         }
