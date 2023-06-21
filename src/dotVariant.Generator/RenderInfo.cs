@@ -94,7 +94,6 @@ namespace dotVariant.Generator
         /// Contains info about relevant members the user has defined.
         /// </param>
         public readonly record struct VariantInfo(
-            VariantInfo.TypeName Type,
             string? Accessibility,
             bool CanBeNull,
             string? ExtensionsAccessibility,
@@ -102,8 +101,8 @@ namespace dotVariant.Generator
             bool IsReadonly,
             bool IsReferenceType,
             string Keyword,
-            string? Namespace,
-            VariantInfo.UserDefinitions UserDefined)
+            VariantInfo.UserDefinitions UserDefined,
+            VariantInfo.TypeContext Context)
         {
             /// <param name="Dispose">
             /// <see langword="true"/> if a user-defined <see cref="IDisposable.Dispose()"/> exists.
@@ -145,7 +144,8 @@ namespace dotVariant.Generator
                 string Type,
                 string TypeParameterQualifiedName);
 
-            public readonly record struct TypeLocation(
+            public readonly record struct TypeContext(
+                TypeName Type,
                 string? Namespace,
                 ImmutableArray<TypeName> Parents);
         }
@@ -247,14 +247,6 @@ namespace dotVariant.Generator
                     HasHashCode: compilation.HasHashCode,
                     HasSystemReactiveLinq: compilation.HasReactive),
                 Variant: new(
-                    Type: new(
-                        Identifier: type.ToDisplayString(IdentifierFormat),
-                        Name: type.Name,
-                        DiagType: type.ToDisplayString(DiagFormat),
-                        QualifiedType: type.ToDisplayString(QualifiedTypeFormat),
-                        Type: type.ToDisplayString(TopLevelTypeFormat),
-                        TypeParameterQualifiedName: TypeParameterQualifiedName(type)
-                    ),
                     Accessibility: VariantAccessibility(type),
                     CanBeNull: type.IsReferenceType,
                     ExtensionsAccessibility: ExtensionsAccessibility(type),
@@ -262,11 +254,36 @@ namespace dotVariant.Generator
                     IsReferenceType: type.IsReferenceType,
                     IsReadonly: IsReadonly(type, token),
                     Keyword: desc.Syntax.Keyword.Text,
-                    Namespace: typeNamespace,
+                    Context: CreateTypeContext(type, typeNamespace),
                     UserDefined: new(
                         // If the user defined any method named Dispose() bail out. Too risky!
                         Dispose: ImplementsDispose(type, compilation.DisposableInterface) || HasAnyDisposeMethod(type))
                 )
+            );
+        }
+
+        private static VariantInfo.TypeContext CreateTypeContext(INamedTypeSymbol type, string? ns)
+        {
+            var parents = new List<VariantInfo.TypeName>();
+            var current = type;
+            while (current is not null)
+            {
+                parents.Add(CreateTypeName(current));
+                current = current.BaseType;
+            }
+            parents.Reverse();
+            return new(CreateTypeName(type), ns, parents.ToImmutableArray());
+        }
+
+        private static VariantInfo.TypeName CreateTypeName(INamedTypeSymbol type)
+        {
+            return new(
+                Identifier: type.ToDisplayString(IdentifierFormat),
+                Name: type.Name,
+                DiagType: type.ToDisplayString(DiagFormat),
+                QualifiedType: type.ToDisplayString(QualifiedTypeFormat),
+                Type: type.ToDisplayString(TopLevelTypeFormat),
+                TypeParameterQualifiedName: TypeParameterQualifiedName(type)
             );
         }
 
