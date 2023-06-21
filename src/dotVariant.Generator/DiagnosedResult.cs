@@ -50,6 +50,19 @@ public readonly struct DiagnosedResult<TValue>
         return new DiagnosedResult<TResult>(Diagnostics, HasErrors, result);
     }
 
+    public ImmutableArray<DiagnosedResult<TResult>> SelectMany<TResult>(Func<TValue, ImmutableArray<TResult>> selector)
+    {
+        var diagnostics = Diagnostics;
+        if (HasErrors)
+        {
+            // preserve diagnostics
+            return ImmutableArray.Create(new DiagnosedResult<TResult>(diagnostics, true, default!));
+        }
+
+        var results = selector(ValueOrDefault!);
+        return results.Select(r => new DiagnosedResult<TResult>(diagnostics, false, r)).ToImmutableArray();
+    }
+
     public bool Equals(DiagnosedResult<TValue> other)
     {
         return HasErrors == other.HasErrors && EqualityComparer<TValue?>.Default.Equals(ValueOrDefault, other.ValueOrDefault);
