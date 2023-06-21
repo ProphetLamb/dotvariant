@@ -99,7 +99,6 @@ namespace dotVariant.Generator
             bool CanBeNull,
             string? ExtensionsAccessibility,
             ImmutableArray<VariantInfo.GenericInfo> Generics,
-            string Identifier,
             bool IsReadonly,
             bool IsReferenceType,
             string Keyword,
@@ -139,6 +138,7 @@ namespace dotVariant.Generator
             /// e.g. TypeName T1,T2,T3 = TypeName_T1_T2_T3
             /// </param>
             public readonly record struct TypeName(
+                string Identifier,
                 string DiagType,
                 string Name,
                 string QualifiedType,
@@ -248,6 +248,7 @@ namespace dotVariant.Generator
                     HasSystemReactiveLinq: compilation.HasReactive),
                 Variant: new(
                     Type: new(
+                        Identifier: type.ToDisplayString(IdentifierFormat),
                         Name: type.Name,
                         DiagType: type.ToDisplayString(DiagFormat),
                         QualifiedType: type.ToDisplayString(QualifiedTypeFormat),
@@ -258,7 +259,6 @@ namespace dotVariant.Generator
                     CanBeNull: type.IsReferenceType,
                     ExtensionsAccessibility: ExtensionsAccessibility(type),
                     Generics: GenericsFromType(type),
-                    Identifier: type.ToDisplayString(IdentifierFormat),
                     IsReferenceType: type.IsReferenceType,
                     IsReadonly: IsReadonly(type, token),
                     Keyword: desc.Syntax.Keyword.Text,

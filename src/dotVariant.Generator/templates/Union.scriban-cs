@@ -205,7 +205,7 @@ namespace dotVariant._G{{ if Variant.Namespace; "." + Variant.Namespace; end }}
 
         {{~ ## STORAGE CONSTRUCTORS ## ~}}
         {{~ for $p in Params ~}}
-        public {{ Variant.Identifier }}({{ $p.Type }} {{ $p.Identifier }})
+        public {{ Variant.Type.Identifier }}({{ $p.Type }} {{ $p.Identifier }})
         {
             Index = {{ $p.Index }};
             _x = new Union({{ $p.Identifier }});

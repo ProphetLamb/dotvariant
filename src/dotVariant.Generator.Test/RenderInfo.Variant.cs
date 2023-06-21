@@ -35,7 +35,7 @@ namespace dotVariant.Generator.Test
                     ri => Assert.Multiple(() =>
                     {
                         Assert.That(ri.Variant.Type.DiagType, Is.EqualTo("XyzVariant"));
-                        Assert.That(ri.Variant.Identifier, Is.EqualTo("XyzVariant"));
+                        Assert.That(ri.Variant.Type.Identifier, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Name, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Type, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.QualifiedType, Is.EqualTo("global::XyzVariant"));
@@ -52,7 +52,7 @@ namespace dotVariant.Generator.Test
                     ri => Assert.Multiple(() =>
                     {
                         Assert.That(ri.Variant.Type.DiagType, Is.EqualTo("class"));
-                        Assert.That(ri.Variant.Identifier, Is.EqualTo("@class"));
+                        Assert.That(ri.Variant.Type.Identifier, Is.EqualTo("@class"));
                         Assert.That(ri.Variant.Type.Name, Is.EqualTo("class"));
                         Assert.That(ri.Variant.Type.Type, Is.EqualTo("@class"));
                         Assert.That(ri.Variant.Type.QualifiedType, Is.EqualTo("global::@class"));
@@ -69,7 +69,7 @@ namespace dotVariant.Generator.Test
                     ri => Assert.Multiple(() =>
                     {
                         Assert.That(ri.Variant.Type.DiagType, Is.EqualTo("XyzVariant<A, B>"));
-                        Assert.That(ri.Variant.Identifier, Is.EqualTo("XyzVariant"));
+                        Assert.That(ri.Variant.Type.Identifier, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Name, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Type, Is.EqualTo("XyzVariant<A, B>"));
                         Assert.That(ri.Variant.Type.QualifiedType, Is.EqualTo("global::XyzVariant<A, B>"));
@@ -86,7 +86,7 @@ namespace dotVariant.Generator.Test
                     ri => Assert.Multiple(() =>
                     {
                         Assert.That(ri.Variant.Type.DiagType, Is.EqualTo("XyzVariant<class, B>"));
-                        Assert.That(ri.Variant.Identifier, Is.EqualTo("XyzVariant"));
+                        Assert.That(ri.Variant.Type.Identifier, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Name, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Type, Is.EqualTo("XyzVariant<@class, B>"));
                         Assert.That(ri.Variant.Type.QualifiedType, Is.EqualTo("global::XyzVariant<@class, B>"));
@@ -106,7 +106,7 @@ namespace dotVariant.Generator.Test
                     ri => Assert.Multiple(() =>
                     {
                         Assert.That(ri.Variant.Type.DiagType, Is.EqualTo("Foo.Bar.XyzVariant"));
-                        Assert.That(ri.Variant.Identifier, Is.EqualTo("XyzVariant"));
+                        Assert.That(ri.Variant.Type.Identifier, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Name, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Type, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.QualifiedType, Is.EqualTo("global::Foo.Bar.XyzVariant"));
@@ -126,7 +126,7 @@ namespace dotVariant.Generator.Test
                     ri => Assert.Multiple(() =>
                     {
                         Assert.That(ri.Variant.Type.DiagType, Is.EqualTo("Foo.Bar.XyzVariant<A, B>"));
-                        Assert.That(ri.Variant.Identifier, Is.EqualTo("XyzVariant"));
+                        Assert.That(ri.Variant.Type.Identifier, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Name, Is.EqualTo("XyzVariant"));
                         Assert.That(ri.Variant.Type.Type, Is.EqualTo("XyzVariant<A, B>"));
                         Assert.That(ri.Variant.Type.QualifiedType, Is.EqualTo("global::Foo.Bar.XyzVariant<A, B>"));

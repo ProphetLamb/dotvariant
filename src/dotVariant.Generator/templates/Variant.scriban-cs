@@ -19,7 +19,7 @@ Global input variables are fed from C# RenderInfo members:
 namespace {{ Variant.Namespace }}
 {
 {{~ end ~}}
-    [global::System.Diagnostics.DebuggerTypeProxy(typeof({{ Variant.Identifier; open_type_parameter_list }}.__DebuggerTypeProxy))]
+    [global::System.Diagnostics.DebuggerTypeProxy(typeof({{ Variant.Type.Identifier; open_type_parameter_list }}.__DebuggerTypeProxy))]
     [global::System.Diagnostics.DebuggerDisplay("{_variant.AsObject}", Type = "{_variant.TypeString,nq}")]
     partial {{ Variant.Keyword }} {{ Variant.Type.Type }}
         : global::System.IEquatable<{{ Variant.Type.Type }}>
@@ -36,7 +36,7 @@ namespace {{ Variant.Namespace }}
         /// </summary>
         /// <param name="{{ $p.Name }}">The value to initlaize the variant with.</param>
         [global::System.Diagnostics.DebuggerNonUserCode]
-        public {{ Variant.Identifier }}({{ $p.Type }} {{ $p.Identifier }})
+        public {{ Variant.Type.Identifier }}({{ $p.Type }} {{ $p.Identifier }})
             => _variant = new {{ storage_type }}({{ $p.Identifier }});
         {{~ end ~}}
 
