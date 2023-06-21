@@ -283,7 +283,7 @@ namespace dotVariant.Generator
                 DiagType: type.ToDisplayString(DiagFormat),
                 QualifiedType: type.ToDisplayString(QualifiedTypeFormat),
                 Type: type.ToDisplayString(TopLevelTypeFormat),
-                ExtensionClassName: CreateExtensionMethodName(type)
+                ExtensionClassName: CreateExtensionClassName(type)
             );
         }
 
@@ -292,9 +292,10 @@ namespace dotVariant.Generator
             return type.ContainingNamespace.IsGlobalNamespace ? null : type.ContainingNamespace.ToDisplayString();
         }
 
-        private static string CreateExtensionMethodName(INamedTypeSymbol type)
+        private static string CreateExtensionClassName(INamedTypeSymbol type)
         {
-            return type.TypeParameters.IsDefaultOrEmpty ? $"{type.Name}_VariantExtensions" : $"{type.Name}_{string.Join("_", type.TypeParameters.Select(p => p.Name))}_VariantExtensions";
+            var qualifiedTypeName = type.TypeParameters.IsDefaultOrEmpty ? $"{type.Name}" : $"{type.Name}_{string.Join("_", type.TypeParameters.Select(p => p.Name))}";
+            return $"{qualifiedTypeName}_VariantExtensions";
         }
 
         private static string DetermineOutType(IParameterSymbol p, bool emitNullable, LanguageVersion version)

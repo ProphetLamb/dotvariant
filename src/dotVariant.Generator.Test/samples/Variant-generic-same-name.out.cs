@@ -517,7 +517,7 @@ namespace Foo
     /// Extensions which allow for easy and powerful integration into `System.Linq`-like queries
     /// on <see cref="global::System.Collections.Generic.IEnumerable{T}" /> sequences, that let you manipulate a stream of variants based on the contained type.
     /// </summary>
-    public static partial class Variant_T_Ex
+    public static partial class Variant_T_VariantExtensions
     {
         /// <summary>
         /// Transform a Variant-based enumerable sequence by applying a selector function to those elements
@@ -673,7 +673,7 @@ namespace Foo
     /// Extensions which allow for easy and powerful integration into `System.Reactive.Linq`-like queries
     /// on <see cref="global::System.IObservable{T}" /> sequences, that let you manipulate an asynchronous stream of variants based on the contained type.
     /// </summary>
-    public static partial class Variant_T_Ex
+    public static partial class Variant_T_VariantExtensions
     {
         /// <summary>
         /// Projects each <see cref="T"/> element of an observable sequence
@@ -1707,7 +1707,7 @@ namespace Foo
     /// Extensions which allow for easy and powerful integration into `System.Linq`-like queries
     /// on <see cref="global::System.Collections.Generic.IEnumerable{T}" /> sequences, that let you manipulate a stream of variants based on the contained type.
     /// </summary>
-    internal static partial class Variant_T1_T2_Ex
+    internal static partial class Variant_T1_T2_VariantExtensions
     {
         /// <summary>
         /// Transform a Variant-based enumerable sequence by applying a selector function to those elements
@@ -1949,7 +1949,7 @@ namespace Foo
     /// Extensions which allow for easy and powerful integration into `System.Reactive.Linq`-like queries
     /// on <see cref="global::System.IObservable{T}" /> sequences, that let you manipulate an asynchronous stream of variants based on the contained type.
     /// </summary>
-    internal static partial class Variant_T1_T2_Ex
+    internal static partial class Variant_T1_T2_VariantExtensions
     {
         /// <summary>
         /// Projects each <see cref="T1"/> element of an observable sequence

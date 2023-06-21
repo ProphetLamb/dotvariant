@@ -981,7 +981,7 @@ namespace Foo
     /// Extensions which allow for easy and powerful integration into `System.Linq`-like queries
     /// on <see cref="global::System.Collections.Generic.IEnumerable{T}" /> sequences, that let you manipulate a stream of variants based on the contained type.
     /// </summary>
-    public static partial class Variant_struct_nullable_enableEx
+    public static partial class Variant_struct_nullable_enable_VariantExtensions
     {
         /// <summary>
         /// Transform a Variant_struct_nullable_enable-based enumerable sequence by applying a selector function to those elements
@@ -1309,7 +1309,7 @@ namespace Foo
     /// Extensions which allow for easy and powerful integration into `System.Reactive.Linq`-like queries
     /// on <see cref="global::System.IObservable{T}" /> sequences, that let you manipulate an asynchronous stream of variants based on the contained type.
     /// </summary>
-    public static partial class Variant_struct_nullable_enableEx
+    public static partial class Variant_struct_nullable_enable_VariantExtensions
     {
         /// <summary>
         /// Projects each <see cref="long"/> element of an observable sequence
