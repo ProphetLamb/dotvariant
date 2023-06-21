@@ -15,8 +15,7 @@ namespace dotVariant.Generator;
 /// <summary>A result type carrying <see cref="Diagnostic"/> values and a <typeparamref name="TValue"/> if any only if no errors are diagnosed.</summary>
 /// <typeparam name="TValue">The type of the value</typeparam>
 /// <remarks>Diagnosed result ignores diagnostics during equality comparison to improve caching consistency.</remarks>
-public readonly struct DiagnosedResult<TValue> : IEquatable<DiagnosedResult<TValue>>
-    where TValue : IEquatable<TValue>
+public readonly struct DiagnosedResult<TValue>
 {
     private readonly bool _noErrors;
 
@@ -46,7 +45,6 @@ public readonly struct DiagnosedResult<TValue> : IEquatable<DiagnosedResult<TVal
     }
 
     public DiagnosedResult<TResult> Select<TResult>(Func<TValue, TResult> selector)
-        where TResult : IEquatable<TResult>
     {
         var result = HasErrors ? default : selector(ValueOrDefault!);
         return new DiagnosedResult<TResult>(Diagnostics, HasErrors, result);
