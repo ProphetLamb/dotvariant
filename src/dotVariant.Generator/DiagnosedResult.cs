@@ -16,7 +16,7 @@ namespace dotVariant.Generator;
 /// <typeparam name="TValue">The type of the value</typeparam>
 /// <remarks>Diagnosed result ignores diagnostics during equality comparison to improve caching consistency.</remarks>
 public readonly struct DiagnosedResult<TValue> : IEquatable<DiagnosedResult<TValue>>
-    where TValue: IEquatable<TValue>
+    where TValue : IEquatable<TValue>
 {
     private readonly bool _noErrors;
 
