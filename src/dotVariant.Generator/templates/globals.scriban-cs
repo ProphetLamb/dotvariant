@@ -31,7 +31,7 @@ constrained_type_parameters = Variant.Generics | array.filter @(do; ret $0.Const
 readonly constrained_type_parameters
 
 # The type to use for variables and function parameters
-variant_nullable_param = emit_nullability && Variant.IsReferenceType ? (Variant.Type + "?" ) : Variant.Type
+variant_nullable_param = emit_nullability && Variant.IsReferenceType ? (Variant.Type.Type + "?" ) : Variant.Type.Type
 readonly variant_nullable_param
 
 func func_type(param, result = "TResult")
@@ -70,36 +70,36 @@ end
 readonly annotate_NotNull
 
 func throw_mismatch_error(expected, actual, type = "")
-    ret "global::dotVariant.GeneratorSupport.Errors.ThrowMismatchError" + (type == "" ? "" : "<" + type + ">") + "(" + ([string.literal Variant.DiagType, string.literal expected, actual] | array.join ", ") + ")"
+    ret "global::dotVariant.GeneratorSupport.Errors.ThrowMismatchError" + (type == "" ? "" : "<" + type + ">") + "(" + ([string.literal Variant.Type.DiagType, string.literal expected, actual] | array.join ", ") + ")"
 end
 readonly throw_mismatch_error
 
 func throw_internal_error(type = "")
-    ret "global::dotVariant.GeneratorSupport.Errors.ThrowInternalError" + (type == "" ? "" : "<" + type + ">") + "(" + (string.literal Variant.DiagType) + ")"
+    ret "global::dotVariant.GeneratorSupport.Errors.ThrowInternalError" + (type == "" ? "" : "<" + type + ">") + "(" + (string.literal Variant.Type.DiagType) + ")"
 end
 readonly throw_internal_error
 
 func throw_empty_error(type = "")
-    ret "global::dotVariant.GeneratorSupport.Errors.ThrowEmptyError" + (type == "" ? "" : "<" + type + ">") + "(" + (string.literal Variant.DiagType) + ")"
+    ret "global::dotVariant.GeneratorSupport.Errors.ThrowEmptyError" + (type == "" ? "" : "<" + type + ">") + "(" + (string.literal Variant.Type.DiagType) + ")"
 end
 readonly throw_empty_error_error
 
 func make_mismatch_error(expected, actual)
-    ret "global::dotVariant.GeneratorSupport.Errors.MakeMismatchError(" + ([string.literal Variant.DiagType, string.literal expected, actual] | array.join ", ") + ")"
+    ret "global::dotVariant.GeneratorSupport.Errors.MakeMismatchError(" + ([string.literal Variant.Type.DiagType, string.literal expected, actual] | array.join ", ") + ")"
 end
 readonly make_mismatch_error
 
 func make_internal_error()
-    ret "global::dotVariant.GeneratorSupport.Errors.MakeInternalError(" + (string.literal Variant.DiagType) + ")"
+    ret "global::dotVariant.GeneratorSupport.Errors.MakeInternalError(" + (string.literal Variant.Type.DiagType) + ")"
 end
 readonly make_internal_error
 
 func make_empty_error()
-    ret "global::dotVariant.GeneratorSupport.Errors.MakeEmptyError(" + (string.literal Variant.DiagType) + ")"
+    ret "global::dotVariant.GeneratorSupport.Errors.MakeEmptyError(" + (string.literal Variant.Type.DiagType) + ")"
 end
 readonly make_empty_error_error
 
-storage_type = "global::dotVariant._G." + (Variant.Namespace ? Variant.Namespace + "." : "") + Variant.Type
+storage_type = "global::dotVariant._G." + (Variant.Namespace ? Variant.Namespace + "." : "") + Variant.Type.Type
 readonly storage_type
 
 func accessor(param)

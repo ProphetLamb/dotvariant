@@ -19,12 +19,12 @@ namespace {{ Options.ExtensionClassNamespace }}
     /// Extensions which allow for easy and powerful integration into `System.Linq`-like queries
     /// on <see cref="global::System.Collections.Generic.IEnumerable{T}" /> sequences, that let you manipulate a stream of variants based on the contained type.
     /// </summary>
-    {{ Variant.ExtensionsAccessibility }} static partial class {{ Variant.TypeParameterQualifiedName }}Ex
+    {{ Variant.ExtensionsAccessibility }} static partial class {{ Variant.Type.TypeParameterQualifiedName }}Ex
     {
         {{~ ## Match(IEnumerable<V>, Func<A, R>) ## ~}}
         {{~ for $p in Params ~}}
         /// <summary>
-        /// Transform a {{ Variant.Name }}-based enumerable sequence by applying a selector function to those elements
+        /// Transform a {{ Variant.Type.Name }}-based enumerable sequence by applying a selector function to those elements
         /// containing a value of type <see cref="{{ cref $p.Type }}"/> and dropping all others.
         /// </summary>
         /// <param name="_source">An enumerable sequence whose elements to match on.</param>
@@ -34,7 +34,7 @@ namespace {{ Options.ExtensionClassNamespace }}
         /// <typeparam name="TResult">The resulting sequence's element type.</typeparam>
         public static global::System.Collections.Generic.IEnumerable<TResult>
             Match<TResult{{ appended_type_parameters }}>(
-                this global::System.Collections.Generic.IEnumerable<{{ Variant.QualifiedType }}> _source,
+                this global::System.Collections.Generic.IEnumerable<{{ Variant.Type.QualifiedType }}> _source,
                 {{ func_type $p }} {{ $p.Identifier }})
         {{~ for $tp in constrained_type_parameters ~}}
             where {{ $tp.Identifier }} : {{ array.join $tp.Constraints ", " }}
@@ -53,7 +53,7 @@ namespace {{ Options.ExtensionClassNamespace }}
         {{~ ## Match(IEnumerable<V>, Func<A, R>, R) ## ~}}
         {{~ for $p in Params ~}}
         /// <summary>
-        /// Transform a {{ Variant.Name }}-based enumerable sequence by applying a selector function to those elements
+        /// Transform a {{ Variant.Type.Name }}-based enumerable sequence by applying a selector function to those elements
         /// containing a value of type <see cref="{{ cref $p.Type }}"/> and replacing all others by a fallback value.
         /// </summary>
         /// <param name="_source">An enumerable sequence whose elements to match on.</param>
@@ -64,7 +64,7 @@ namespace {{ Options.ExtensionClassNamespace }}
         /// <typeparam name="TResult">The resulting sequence's element type.</typeparam>
         public static global::System.Collections.Generic.IEnumerable<TResult>
             Match<TResult{{ appended_type_parameters }}>(
-                this global::System.Collections.Generic.IEnumerable<{{ Variant.QualifiedType }}> _source,
+                this global::System.Collections.Generic.IEnumerable<{{ Variant.Type.QualifiedType }}> _source,
                 {{ func_type $p }} {{ $p.Identifier }},
                 TResult _)
         {{~ for $tp in constrained_type_parameters ~}}
@@ -88,7 +88,7 @@ namespace {{ Options.ExtensionClassNamespace }}
         {{~ ## Match(IEnumerable<V>, Func<A, R>, Func<R>) ## ~}}
         {{~ for $p in Params ~}}
         /// <summary>
-        /// Transform a {{ Variant.Name }}-based enumerable sequence by applying a selector function to those elements
+        /// Transform a {{ Variant.Type.Name }}-based enumerable sequence by applying a selector function to those elements
         /// containing a value of type <see cref="{{ cref $p.Type }}"/> and replacing all others with the result of a fallback selector.
         /// </summary>
         /// <param name="_source">An enumerable sequence whose elements to match on.</param>
@@ -99,7 +99,7 @@ namespace {{ Options.ExtensionClassNamespace }}
         /// <typeparam name="TResult">The resulting sequence's element type.</typeparam>
         public static global::System.Collections.Generic.IEnumerable<TResult>
             Match<TResult{{ appended_type_parameters }}>(
-                this global::System.Collections.Generic.IEnumerable<{{ Variant.QualifiedType }}> _source,
+                this global::System.Collections.Generic.IEnumerable<{{ Variant.Type.QualifiedType }}> _source,
                 {{ func_type $p }} {{ $p.Identifier }},
                 global::System.Func<TResult> _)
         {{~ for $tp in constrained_type_parameters ~}}
@@ -122,7 +122,7 @@ namespace {{ Options.ExtensionClassNamespace }}
 
         {{~ ## Visit(IEnumerable<V>, Func<A, R>, Func<B, R>, ...) ## ~}}
         /// <summary>
-        /// Transform a {{ Variant.Name }}-based enumerable sequence by applying a selector function to each element
+        /// Transform a {{ Variant.Type.Name }}-based enumerable sequence by applying a selector function to each element
         /// wich matches the type stored within the value, and throwing <see cref="global::System.InvalidOperationException"/>
         /// if an element is empty.
         /// </summary>
@@ -131,12 +131,12 @@ namespace {{ Options.ExtensionClassNamespace }}
         /// <param name="{{ $p.Name }}">The delegate to invoke if the element's value is of type <see cref="{{ cref $p.Type }}"/>.</param>
         {{~ end ~}}
         /// <returns>An enumerable sequence that contains the matched and transformed elements of the input sequence.</returns>
-        /// <exception cref="global::System.InvalidOperationException">The sequence encountered an empty {{ Variant.Name }}.</exception>
+        /// <exception cref="global::System.InvalidOperationException">The sequence encountered an empty {{ Variant.Type.Name }}.</exception>
         /// <exception cref="global::System.Exception">Any exception thrown from a delegate is rethrown.</exception>
         /// <typeparam name="TResult">The resulting sequence's element type.</typeparam>
         public static global::System.Collections.Generic.IEnumerable<TResult>
             Visit<TResult{{ appended_type_parameters }}>(
-                this global::System.Collections.Generic.IEnumerable<{{ Variant.QualifiedType }}> _source,
+                this global::System.Collections.Generic.IEnumerable<{{ Variant.Type.QualifiedType }}> _source,
                 {{ func_params }})
         {{~ for $tp in constrained_type_parameters ~}}
             where {{ $tp.Identifier }} : {{ array.join $tp.Constraints ", " }}
@@ -163,7 +163,7 @@ namespace {{ Options.ExtensionClassNamespace }}
 
         {{~ ## Visit(IEnumerable<V>, Func<A, R>, Func<B, R>, ..., empty) ## ~}}
         /// <summary>
-        /// Transform a {{ Variant.Name }}-based enumerable sequence by applying a selector function to each element
+        /// Transform a {{ Variant.Type.Name }}-based enumerable sequence by applying a selector function to each element
         /// wich matches the type stored within the value, and replacing empty elements with the result of a fallback selector.
         /// </summary>
         /// <param name="_source">An enumerable sequence whose elements to match on.</param>
@@ -176,7 +176,7 @@ namespace {{ Options.ExtensionClassNamespace }}
         /// <typeparam name="TResult">The resulting sequence's element type.</typeparam>
         public static global::System.Collections.Generic.IEnumerable<TResult>
             Visit<TResult{{ appended_type_parameters }}>(
-                this global::System.Collections.Generic.IEnumerable<{{ Variant.QualifiedType }}> _source,
+                this global::System.Collections.Generic.IEnumerable<{{ Variant.Type.QualifiedType }}> _source,
                 {{ func_params }},
                 global::System.Func<TResult> _)
         {{~ for $tp in constrained_type_parameters ~}}

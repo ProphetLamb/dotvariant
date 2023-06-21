@@ -21,8 +21,8 @@ namespace {{ Variant.Namespace }}
 {{~ end ~}}
     [global::System.Diagnostics.DebuggerTypeProxy(typeof({{ Variant.Identifier; open_type_parameter_list }}.__DebuggerTypeProxy))]
     [global::System.Diagnostics.DebuggerDisplay("{_variant.AsObject}", Type = "{_variant.TypeString,nq}")]
-    partial {{ Variant.Keyword }} {{ Variant.Type }}
-        : global::System.IEquatable<{{ Variant.Type }}>
+    partial {{ Variant.Keyword }} {{ Variant.Type.Type }}
+        : global::System.IEquatable<{{ Variant.Type.Type }}>
         {{~ if needs_dispose ~}}
         , global::System.IDisposable
         {{~ end ~}}
@@ -32,7 +32,7 @@ namespace {{ Variant.Namespace }}
         {{~ ## VARIANT CONSTRUCTORS ## ~}}
         {{~ for $p in Params ~}}
         /// <summary>
-        /// Create a {{ Variant.Name }} with a value of type <see cref="{{ cref $p.Type }}"/>.
+        /// Create a {{ Variant.Type.Name }} with a value of type <see cref="{{ cref $p.Type }}"/>.
         /// </summary>
         /// <param name="{{ $p.Name }}">The value to initlaize the variant with.</param>
         [global::System.Diagnostics.DebuggerNonUserCode]
@@ -44,24 +44,24 @@ namespace {{ Variant.Namespace }}
         {{~ for $p in Params ~}}
         {{~ if $p.EmitImplicitCast ~}}
         /// <summary>
-        /// Create a {{ Variant.Name }} with a value of type <see cref="{{ cref $p.Type }}"/>.
+        /// Create a {{ Variant.Type.Name }} with a value of type <see cref="{{ cref $p.Type }}"/>.
         /// </summary>
         /// <param name="{{ $p.Name }}">The value to initlaize the variant with.</param>
         [global::System.Diagnostics.DebuggerNonUserCode]
-        public static implicit operator {{ Variant.Type }}({{ $p.Type }} {{ $p.Identifier }})
-            => new {{ Variant.Type }}({{ $p.Identifier }});
+        public static implicit operator {{ Variant.Type.Type }}({{ $p.Type }} {{ $p.Identifier }})
+            => new {{ Variant.Type.Type }}({{ $p.Identifier }});
         {{~ end ~}}
         {{~ end ~}}
 
         {{~ ## STATIC CREATE FACTORIES ## ~}}
         {{~ for $p in Params ~}}
         /// <summary>
-        /// Create a {{ Variant.Name }} with a value of type <see cref="{{ cref $p.Type }}"/>.
+        /// Create a {{ Variant.Type.Name }} with a value of type <see cref="{{ cref $p.Type }}"/>.
         /// </summary>
         /// <param name="{{ $p.Name }}">The value to initlaize the variant with.</param>
         [global::System.Diagnostics.DebuggerNonUserCode]
-        public static {{ Variant.Type }} Create({{ $p.Type }} {{ $p.Identifier }})
-            => new {{ Variant.Type }}({{ $p.Identifier }});
+        public static {{ Variant.Type.Type }} Create({{ $p.Type }} {{ $p.Identifier }})
+            => new {{ Variant.Type.Type }}({{ $p.Identifier }});
         {{~ end ~}}
 
         {{~ ## DISPOSE ## ~}}
@@ -89,7 +89,7 @@ namespace {{ Variant.Namespace }}
         /// <inheritdoc/>
         [global::System.Diagnostics.DebuggerNonUserCode]
         public {{ method_modifiers }}override bool Equals(object{{ global_nullable }} other)
-            => other is {{ Variant.Type }} v
+            => other is {{ Variant.Type.Type }} v
             && Equals(v);
 
         /// <inheritdoc/>
@@ -97,18 +97,18 @@ namespace {{ Variant.Namespace }}
         public {{ method_modifiers }}bool Equals({{ variant_nullable_param }} other)
             => {{ if Variant.IsReferenceType; "!(other is null) && "; end }}_variant.Equals(other._variant);
 
-        /// <summary>Compare two {{ Variant.Type }} objects for equality.</summary>
-        /// <param name="lhs">The first <see cref="{{ Variant.Type }}" /> to compare.</param>
-        /// <param name="rhs">The second <see cref="{{ Variant.Type }}" /> to compare.</param>
+        /// <summary>Compare two {{ Variant.Type.Type }} objects for equality.</summary>
+        /// <param name="lhs">The first <see cref="{{ Variant.Type.Type }}" /> to compare.</param>
+        /// <param name="rhs">The second <see cref="{{ Variant.Type.Type }}" /> to compare.</param>
         /// <returns><see langword="true" /> if <paramref name="lhs"/> and <paramref name="rhs"/> are considered equal; otherwise, <see langword="false" />.</returns>
         /// <seealso cref="Equals({{variant_nullable_param }})" />
         [global::System.Diagnostics.DebuggerNonUserCode]
         public static bool operator ==({{ param_modifiers; variant_nullable_param }} lhs, {{ param_modifiers; variant_nullable_param }} rhs)
             => {{ coalesce Variant "lhs" ".Equals(rhs)" "(rhs is null)" }};
 
-        /// <summary>Compare two {{ Variant.Type }} objects for inequality.</summary>
-        /// <param name="lhs">The first <see cref="{{ Variant.Type }}" /> to compare.</param>
-        /// <param name="rhs">The second <see cref="{{ Variant.Type }}" /> to compare.</param>
+        /// <summary>Compare two {{ Variant.Type.Type }} objects for inequality.</summary>
+        /// <param name="lhs">The first <see cref="{{ Variant.Type.Type }}" /> to compare.</param>
+        /// <param name="rhs">The second <see cref="{{ Variant.Type.Type }}" /> to compare.</param>
         /// <returns><see langword="true" /> if <paramref name="lhs"/> and <paramref name="rhs"/> are not considered equal; otherwise, <see langword="false" />.</returns>
         /// <seealso cref="Equals({{variant_nullable_param }})" />
         [global::System.Diagnostics.DebuggerNonUserCode]
@@ -202,7 +202,7 @@ namespace {{ Variant.Namespace }}
         private sealed class __DebuggerTypeProxy
         {
             public object{{ global_nullable }} Value { get; }
-            public __DebuggerTypeProxy({{ Variant.Type }} v)
+            public __DebuggerTypeProxy({{ Variant.Type.Type }} v)
             {
                 Value = v._variant.AsObject;
                 {{~ # Force a reference to the VariantOf function so the user doesn't get IDE0051 "Private member 'VariantOf' is unused." ~}}
