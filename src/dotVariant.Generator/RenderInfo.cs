@@ -29,7 +29,8 @@ namespace dotVariant.Generator
         RenderInfo.OptionsInfo Options,
         ImmutableArray<RenderInfo.ParamInfo> Params,
         RenderInfo.RuntimeInfo Runtime,
-        RenderInfo.VariantInfo Variant)
+        RenderInfo.VariantInfo Variant,
+        ImmutableArray<RenderInfo.VariantInfo> VariantNesting)
     {
         /// <param name="Nullable">
         /// Either <c>"enable"</c> or <c>"disable"</c>.
@@ -146,8 +147,7 @@ namespace dotVariant.Generator
 
             public readonly record struct TypeContext(
                 TypeName Type,
-                string? Namespace,
-                ImmutableArray<TypeName> Parents);
+                string? Namespace);
         }
 
         /// <param name="CanBeNull">
@@ -207,6 +207,7 @@ namespace dotVariant.Generator
 
         public static RenderInfo FromDescriptor(
             Descriptor desc,
+            ImmutableArray<Descriptor> nestingTrace,
             CompilationInfo compilation,
             AnalyzerConfigOptionsProvider options,
             CancellationToken token)
@@ -234,45 +235,39 @@ namespace dotVariant.Generator
                     OutType: DetermineOutType(p, emitNullable, compilation.LanguageVersion),
                     Type: p.Type.WithNullableAnnotation(p.NullableAnnotation).ToDisplayString(QualifiedTypeFormat)));
 
-            var typeNamespace = TypeNamespace(type);
-
             return new(
                 Language: new(
                     Nullable: emitNullable ? "enable" : "disable",
                     Version: ConvertLanguageVersion(compilation.LanguageVersion)),
                 Options: new(
-                    ExtensionClassNamespace: ExtensionsNamespace(options, typeNamespace)),
+                    ExtensionClassNamespace: ExtensionsNamespace(options, TypeNamespace(type))),
                 Params: paramDescriptors.ToImmutableArray(),
                 Runtime: new(
                     HasHashCode: compilation.HasHashCode,
                     HasSystemReactiveLinq: compilation.HasReactive),
-                Variant: new(
-                    Accessibility: VariantAccessibility(type),
-                    CanBeNull: type.IsReferenceType,
-                    ExtensionsAccessibility: ExtensionsAccessibility(type),
-                    Generics: GenericsFromType(type),
-                    IsReferenceType: type.IsReferenceType,
-                    IsReadonly: IsReadonly(type, token),
-                    Keyword: desc.Syntax.Keyword.Text,
-                    Context: CreateTypeContext(type, typeNamespace),
-                    UserDefined: new(
-                        // If the user defined any method named Dispose() bail out. Too risky!
-                        Dispose: ImplementsDispose(type, compilation.DisposableInterface) || HasAnyDisposeMethod(type))
-                )
+                Variant: CreateVariantInfo(desc, compilation, type, token),
+                VariantNesting: nestingTrace.Select(desc => CreateVariantInfo(desc, compilation, desc.Type, token)).Reverse().ToImmutableArray()
             );
         }
 
-        private static VariantInfo.TypeContext CreateTypeContext(INamedTypeSymbol type, string? ns)
+        private static VariantInfo CreateVariantInfo(Descriptor desc, CompilationInfo compilation,
+            INamedTypeSymbol type, CancellationToken ct)
         {
-            var parents = new List<VariantInfo.TypeName>();
-            var current = type;
-            while (current is not null)
-            {
-                parents.Add(CreateTypeName(current));
-                current = current.BaseType;
-            }
-            parents.Reverse();
-            return new(CreateTypeName(type), ns, parents.ToImmutableArray());
+            return new(
+                Accessibility: VariantAccessibility(type),
+                CanBeNull: type.IsReferenceType,
+                ExtensionsAccessibility: ExtensionsAccessibility(type),
+                Generics: GenericsFromType(type),
+                IsReferenceType: type.IsReferenceType,
+                IsReadonly: IsReadonly(type, ct),
+                Keyword: desc.Syntax.Keyword.Text,
+                Context: new(
+                    Type: CreateTypeName(type),
+                    Namespace: TypeNamespace(type)),
+                UserDefined: new(
+                    // If the user defined any method named Dispose() bail out. Too risky!
+                    Dispose: ImplementsDispose(type, compilation.DisposableInterface) || HasAnyDisposeMethod(type))
+            );
         }
 
         private static VariantInfo.TypeName CreateTypeName(INamedTypeSymbol type)

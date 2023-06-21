@@ -50,29 +50,29 @@ namespace dotVariant.Generator
                     return default;
                 }
 
-                var diagnostics = Diagnose.Variant(symbol, syntax, ct).ToImmutableArray();
+                var type = new SemanticType(symbol, syntax);
+                var diagnostics = Diagnose.Variant(type, ct).ToImmutableArray();
 
-                var decl = new VariantDecl(symbol, syntax, sema.GetNullableContext(syntax.GetLocation().SourceSpan.Start), diagnostics);
-                var compInfo = CompilationInfo.FromCompilation(comp);
-                return (decl, compInfo).AsNullable();
+                return new DiagnosedResult<(VariantDecl Decl, CompilationInfo CompInfo)>(diagnostics, () =>
+                {
+                    var decl = new VariantDecl(type, CreateNestingTrace(type, sema), sema.GetNullableContext(syntax.GetLocation().SourceSpan.Start));
+                    var compInfo = CompilationInfo.FromCompilation(comp);
+                    return (decl, compInfo);
+                }).AsNullable();
             }).SelectNotNull();
 
             var descriptors = variantDecls.Select((tuple, _) =>
             {
                 var (decl, compInfo) = tuple;
-                return new DiagnosedResult<(Descriptor, CompilationInfo)>(decl.Diags,
-                    () => (Descriptor.FromDeclaration(decl.Symbol, decl.Syntax, decl.Nullable), compInfo));
+                return (desc: Descriptor.FromDeclaration(decl.Type, decl.Nullable), nested: decl.NestingTrace.Select((type, _) => Descriptor.FromDeclaration(type, decl.Nullable)).ToImmutableArray(), compInfo);
             });
 
             var renderInfos = descriptors.Combine(generatorContext.AnalyzerConfigOptionsProvider).Select(
                 (tuple, ct) =>
                 {
                     var (source, analyzerOptionProvider) = tuple;
-                    return source.Select(tuple =>
-                    {
-                        var (desc, compInfo) = tuple;
-                        return (desc.HintName, RenderInfo.FromDescriptor(desc, compInfo, analyzerOptionProvider, ct));
-                    });
+                    var (desc, nested, compInfo) = source;
+                    return (desc.HintName, RenderInfo.FromDescriptor(desc, nested, compInfo, analyzerOptionProvider, ct));
                 });
 
             generatorContext.RegisterSourceOutput(renderInfos, (context, source) =>
@@ -88,6 +88,19 @@ namespace dotVariant.Generator
 #endif
                 context.AddSource(name, Renderer.Render(info));
             });
+        }
+
+        private static ImmutableArray<SemanticType> CreateNestingTrace(SemanticType semanticType, SemanticModel semanticModel)
+        {
+            var trace = ImmutableArray.CreateBuilder<SemanticType>();
+            var parent = semanticType.Syntax.Parent;
+            while (parent is TypeDeclarationSyntax current)
+            {
+                trace.Add(new(semanticModel.GetDeclaredSymbol(current)!, current));
+                parent = current.Parent;
+            }
+            trace.Reverse();
+            return trace.ToImmutable();
         }
     }
 }
