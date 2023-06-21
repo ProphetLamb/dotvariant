@@ -75,7 +75,7 @@ namespace dotVariant.Generator
                     });
                 });
 
-            generatorContext.RegisterImplementationSourceOutput(renderInfos, (context, source) =>
+            generatorContext.RegisterSourceOutput(renderInfos, (context, source) =>
             {
                 source.Diagnostics.ForEach(context.ReportDiagnostic);
                 if (!source.TryGetValue(out var tuple))
