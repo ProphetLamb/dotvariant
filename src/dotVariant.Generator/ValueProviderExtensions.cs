@@ -32,5 +32,36 @@ namespace dotVariant.Generator
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T? AsNullable<T>(this T value) where T : struct => value;
+
+        public static IncrementalValuesProvider<DiagnosedResult<TResult>> Select<TSource, TResult>(
+            this IncrementalValuesProvider<DiagnosedResult<TSource>> source,
+            Func<TSource, CancellationToken, TResult> selector)
+        {
+            return source.Select((result, ct) =>
+            {
+                return result.Select(s => selector(s, ct));
+            });
+        }
+
+        public static IncrementalValuesProvider<DiagnosedResult<TResult>> SelectMany<TSource, TResult>(
+            this IncrementalValuesProvider<DiagnosedResult<TSource>> source,
+            Func<TSource, CancellationToken, ImmutableArray<TResult>> selector)
+        {
+            return source.SelectMany((result, ct) =>
+            {
+                return result.SelectMany(s => selector(s, ct));
+            });
+        }
+
+        public static IncrementalValuesProvider<DiagnosedResult<(TLeft Left, TRight Right)>> Combine<TLeft, TRight>(
+            this IncrementalValuesProvider<DiagnosedResult<TLeft>> left,
+            IncrementalValueProvider<TRight> right)
+        {
+            return IncrementalValueProviderExtensions.Combine(left, right).Select((tuple, ct) =>
+            {
+                var (lhs, rhs) = tuple;
+                return lhs.Select(v => (v, rhs));
+            });
+        }
     }
 }
