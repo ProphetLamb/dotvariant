@@ -51,15 +51,12 @@ namespace dotVariant.Generator
                 }
 
                 var type = new SemanticType(symbol, syntax);
-                var diagnostics = Diagnose.Variant(type, ct).ToImmutableArray();
-
-                return new DiagnosedResult<(VariantDecl Decl, CompilationInfo CompInfo)>(diagnostics, () =>
-                {
-                    var decl = new VariantDecl(type, CreateNestingTrace(type, sema), sema.GetNullableContext(syntax.GetLocation().SourceSpan.Start));
-                    var compInfo = CompilationInfo.FromCompilation(comp);
-                    return (decl, compInfo);
-                }).AsNullable();
-            }).SelectNotNull();
+                var decl = new VariantDecl(type, CreateNestingTrace(type, sema), sema.GetNullableContext(syntax.GetLocation().SourceSpan.Start));
+                var compInfo = CompilationInfo.FromCompilation(comp);
+                return (decl, compInfo).AsNullable();
+            })
+                .SelectNotNull()
+                .Diagnose((tuple, ct) => Diagnose.Variant(tuple.decl.Type, ct).ToImmutableArray());
 
             var descriptors = variantDecls.Select((tuple, _) =>
             {
@@ -75,13 +72,8 @@ namespace dotVariant.Generator
                     return (desc.HintName, RenderInfo.FromDescriptor(desc, nested, compInfo, analyzerOptionProvider, ct));
                 });
 
-            generatorContext.RegisterSourceOutput(renderInfos, (context, source) =>
+            generatorContext.RegisterSourceOutput(renderInfos, (context, tuple) =>
             {
-                source.Diagnostics.ForEach(context.ReportDiagnostic);
-                if (!source.TryGetValue(out var tuple))
-                {
-                    return;
-                }
                 var (name, info) = tuple;
 #if DEBUG
                 RenderInfos.Add(info);
